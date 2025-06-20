@@ -1,0 +1,12 @@
+django==5.1.6
+
+django-cors-headers
+psycopg
+psycopg2
+
+pytest
+pytest-django
+coverage
+
+requests
+IPython

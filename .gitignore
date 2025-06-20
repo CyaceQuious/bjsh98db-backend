@@ -1,0 +1,13 @@
+__pycache__/
+db.sqlite3
+
+.coverage
+coverage-reports/
+xunit-reports/
+html-coverage/
+.DS_Store
+.pytest_cache
+
+cache.json
+app.log
+superuser_credentials.txt
