@@ -12,26 +12,22 @@ https://docs.djangoproject.com/en/4.1/ref/settings/
 
 import os
 from pathlib import Path
+import dj_database_url
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 
-# Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/4.1/howto/deployment/checklist/
-
-# SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-xvv16d@^4vu6-_^8w73_wt+xqf-wfppqevn)_zgye!#7l^6=p$'
-
-# SECURITY WARNING: don't run with debug turned on in production!
-# TODO Start: [Student] Disable debug mode in production
-DEBUG = True
-# TODO End: [Student] Disable debug mode in production
+# --- 安全与基本参数 ---
+SECRET_KEY = os.environ.get(
+    "SECRET_KEY",
+    "django-insecure-xvv16d@^4vu6-_^8w73_wt+xqf-wfppqevn)_zgye!#7l^6=p$"  # 开发兜底
+)
+DEBUG = os.environ.get("DEBUG", "1") not in ("0", "false", "False")
 
 
-ALLOWED_HOSTS = [
-    '*'  # Insecure
-]
+# 支持用环境变量配置 ALLOWED_HOSTS，如 "a.com,b.com"
+ALLOWED_HOSTS = [h.strip() for h in os.environ.get("ALLOWED_HOSTS", "*").split(",")]
 
 
 # Application definition
@@ -81,24 +77,35 @@ TEMPLATES = [
 WSGI_APPLICATION = 'BackEnd.wsgi.application'
 
 
-# Database
-# https://docs.djangoproject.com/en/4.1/ref/settings/#databases
+# --- 数据库 ---
+# 优先从 DATABASE_URL 读取（用于生产 / 部署），否则退回到本地开发配置
+DATABASE_URL = os.environ.get("DATABASE_URL")
 
-DEPLOY = os.environ.get('DEPLOY', '0')  # 默认为 '0'（非部署环境）
-
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'meetresult',
-        'USER': 'bjsh',    # 你的数据库用户名
-        'PASSWORD': '111',  # 你的数据库密码
-        'HOST': 'database.bjsh98db.secoder.local' if DEPLOY == '1' else '127.0.0.1',
-        'PORT': '5432',
-        'TEST': {
-            'NAME': 'meetresult_test', 
-        },
-    }  
-}
+if DATABASE_URL:
+    # ssl_require=True 会自动追加 sslmode=require
+    DATABASES = {
+        'default': dj_database_url.parse(
+            DATABASE_URL,
+            conn_max_age=600,
+            ssl_require=True
+        )
+    }
+    # 给测试库一个固定名称（可选）
+    DATABASES['default']['TEST'] = {'NAME': 'meetresult_test'}
+else:
+    # 本地开发兜底（需要你本地跑一个 Postgres）
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql',
+            'NAME': 'meetresult',
+            'USER': 'bjsh',
+            'PASSWORD': '111',
+            'HOST': '127.0.0.1',
+            'PORT': '5432',
+            'TEST': {'NAME': 'meetresult_test'},
+            # 本地可不强制 SSL
+        }
+    }
 
 
 # Password validation

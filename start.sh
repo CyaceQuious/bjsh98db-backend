@@ -2,11 +2,13 @@
 python manage.py makemigrations
 python manage.py migrate
 
+PORT="${PORT:-10000}"
+
 # python3 manage.py runserver 80
 uwsgi --module=BackEnd.wsgi:application \
     --env DJANGO_SETTINGS_MODULE=BackEnd.settings \
     --master \
-    --http=0.0.0.0:80 \
+    --http=0.0.0.0:${PORT} \
     --processes=5 \
     --harakiri=20 \
     --max-requests=5000 \

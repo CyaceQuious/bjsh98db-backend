@@ -3,6 +3,7 @@ django==5.1.6
 django-cors-headers
 psycopg
 psycopg2
+dj-database-url>=2.1.0
 
 pytest
 pytest-django

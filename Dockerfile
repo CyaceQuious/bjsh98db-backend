@@ -1,6 +1,8 @@
 FROM python:3.11
 
-ENV DEPLOY 1
+# 更稳的 Python 运行体验
+# ENV PYTHONDONTWRITEBYTECODE=1 \
+#     PYTHONUNBUFFERED=1
 
 WORKDIR /app
 
@@ -12,6 +14,8 @@ RUN pip install -i https://pypi.tuna.tsinghua.edu.cn/simple uwsgi
 
 COPY . .
 
-EXPOSE 80
+ENV PORT=10000
+
+EXPOSE 10000
 
 CMD ["./start.sh"]
