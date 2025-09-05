@@ -12,4 +12,7 @@ uwsgi --module=BackEnd.wsgi:application \
     --processes=5 \
     --harakiri=20 \
     --max-requests=5000 \
-    --vacuum
+    --vacuum \
+    --buffer-size=65535 \
+    --http-keepalive \
+    --http-timeout=60
