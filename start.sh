@@ -10,7 +10,7 @@ uwsgi --module=BackEnd.wsgi:application \
     --master \
     --http=0.0.0.0:${PORT} \
     --processes=5 \
-    --harakiri=20 \
+    --harakiri=60 \
     --max-requests=5000 \
     --vacuum \
     --buffer-size=65535 \
